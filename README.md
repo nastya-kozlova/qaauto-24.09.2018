@@ -1,4 +1,4 @@
-Install the following components:
+Install the components:
 
 1. IntelliJ IDEA Community version
 2. JDK 10.0.2
