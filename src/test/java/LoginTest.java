@@ -3,9 +3,21 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class LoginTest {
+    WebDriver webDriver;//лбъявили переменную
+    @BeforeMethod
+    public void beforeMethod () {
+        webDriver = new FirefoxDriver();//проинициализировали переменную
+
+    }
+    @AfterMethod
+    public void afterMethod () {
+        webDriver.quit();
+    }
 
     /**
      * PreConditions:
@@ -24,46 +36,43 @@ public class LoginTest {
      */
     @Test
     public void successfulLoginTest() {
-      /*
-        //стринги с исходными данными
-        String logInEmail = "nastya_kozlova@hotmail.com";
-        String passwordData = "test123";
-        String webIdLogIn = "login-email";
-        String webIdPassword = "login-password";
-        String signInButtonId = "login-submit";
 
-        WebDriver webDriver = new FirefoxDriver();
+        webDriver.get("https://linkedin.com");
+        LoginPage loginPage = new LoginPage(webDriver);
+
+        Assert.assertEquals(webDriver.getCurrentUrl(), "https://www.linkedin.com/",
+                "Home page URL is wrong.");
+        loginPage.login( "nastya_kozlova@hotmail.com", "1992mypas");
+
+
+        Assert.assertEquals(webDriver.getCurrentUrl(), "https://www.linkedin.com/feed/", "Homepage URL is wrong");
+
+    }
+    @Test
+    public void  negativeLoginTest () {
         webDriver.get("https://linkedin.com");
         Assert.assertEquals(webDriver.getCurrentUrl(), "https://www.linkedin.com/",
                 "Home page URL is wrong.");
 
-        //тестовый сценарий
-        webDriver.findElement(By.id(webIdLogIn)).sendKeys(logInEmail);
-        webDriver.findElement(By.id(webIdPassword)).sendKeys(webIdPassword);
-        webDriver.findElement(By.id(signInButtonId)).click();
-        Assert.assertEquals(webDriver.getCurrentUrl(), "https://www.linkedin.com/feed/", "URL is wrong: log in is not successful");
-        webDriver.quit();
-        */
+        WebElement logInEmailField = webDriver.findElement(By.xpath("//input[@id='login-email']"));
+        WebElement passwordDataField = webDriver.findElement(By.xpath("//input[@id='login-password']"));
+        WebElement signInButton = webDriver.findElement(By.xpath("//input[@id='login-submit']"));
 
-        WebDriver webDriver = new FirefoxDriver();
-        webDriver.get("https://linkedin.com");
-        Assert.assertEquals(webDriver.getCurrentUrl(), "https://www.linkedin.com/",
-                "Home page URL is wrong.");
-
-        WebElement logInEmailField = webDriver.findElement(By.xpath("input[@id='login-email']"));
-        WebElement passwordDataField = webDriver.findElement(By.xpath("input[@]id='login-password']"));
-        WebElement signInButton = webDriver.findElement(By.xpath("input[@id='login-submit']"));
-
-        String logInEmail = "nastya_kozlova@hotmail.com";
-        String passwordData = "test123";
-
-        logInEmailField.sendKeys(logInEmail);
-        passwordDataField.sendKeys(passwordData);
+        logInEmailField.sendKeys("a@b.c");
+        passwordDataField.sendKeys("");
         signInButton.click();
 
         Assert.assertEquals(webDriver.getCurrentUrl(), "https://www.linkedin.com/feed/", "Homepage URL is wrong");
 
-        webDriver.quit();
 
     }
+
+
+
+
+
 }
+
+
+
+
