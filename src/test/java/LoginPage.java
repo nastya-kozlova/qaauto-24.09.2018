@@ -20,7 +20,7 @@ public void initElements(){
 
 
 }
-    public void login(String userEmail, String userPassword){
+public void login(String userEmail, String userPassword){
         logInEmailField.sendKeys(userEmail);
         passwordDataField.sendKeys(userPassword);
         signInButton.click();
