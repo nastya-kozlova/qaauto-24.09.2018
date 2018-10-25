@@ -5,6 +5,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class LoginTest {
@@ -19,6 +20,15 @@ public class LoginTest {
     @AfterMethod
     public void afterMethod() {
         webDriver.quit();
+    }
+
+    @DataProvider
+    public Object[][] validDataProvider() {
+        return new Object[][]{
+                { "nastya_kozlova@hotmail.com", "1992mypas" },
+                { "nastya_Kozlova@hotmail.com", "1992mypas"},
+                { "  nastya_kozlova@hotmail.com ", "1992mypas" }
+        };
     }
 
     /**
@@ -37,25 +47,18 @@ public class LoginTest {
      * - Close FF browser.
      */
 
-    @Test
-    public void successfulLoginTest() {
+    @Test(dataProvider = "validDataProvider")
+    public void successfulLoginTest(String userEmail, String userPassword) {
 
         webDriver.get("https://linkedin.com");
         LoginPage loginPage = new LoginPage(webDriver);
 
        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
 
-        loginPage.login("nastya_kozlova@hotmail.com", "1992mypas");
+        HomePage homePage = loginPage.login(userEmail, userPassword);
 
-        Assert.assertEquals(webDriver.getCurrentUrl(), "https://www.linkedin.com/feed/", "Homepage URL is wrong");
-        Assert.assertEquals(webDriver.getTitle(), "LinkedIn", "Home page title is wrong.");
-        //li[@id='profile-nav-item']
-
-        HomePage homePage = new HomePage(webDriver);
-
-       // Assert.assertTrue(homePage.profileNavItem.isDisplayed(), "profileNavItem is not displayed on Login Page");
-
-
+        Assert.assertTrue(homePage.isPageLoaded(),
+                "HomePage is not displayed on Login page.");
     }
 
     @Test
@@ -63,25 +66,59 @@ public class LoginTest {
         webDriver.get("https://linkedin.com");
         LoginPage loginPage = new LoginPage(webDriver);
 
-        Assert.assertEquals(webDriver.getCurrentUrl(), "https://www.linkedin.com/",
-                "Home page URL is wrong.");
-        loginPage.login("", "");//вызов метода логин, который есть в классе логинпейдж.джава
+        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
+
+        loginPage.login("nastya_kozlova@hotmail.com", "");
 
 
-        Assert.assertEquals(webDriver.getCurrentUrl(), "https://www.linkedin.com/feed/", "Homepage URL is wrong");
+        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
 
     }
 
     @Test
     public void wrongPasswordTest() {
         webDriver.get("https://linkedin.com");
+
         LoginPage loginPage = new LoginPage(webDriver);
 
-        Assert.assertEquals(webDriver.getCurrentUrl(), "https://www.linkedin.com/",
-                "Home page URL is wrong.");
+        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
+
         loginPage.login("nastya_kozlova@hotmail.com", "658hsgdsd");
 
-        Assert.assertEquals(webDriver.getCurrentUrl(), "https://www.linkedin.com/uas/login-submit?loginSubmitSource=GUEST_HOME", "Homepage URL is wrong");
+        LoginSubmitPage loginSubmitPage = new LoginSubmitPage(webDriver);
+
+        Assert.assertTrue(loginSubmitPage.isPasswordMessageDisplayed(), "Login Submit page is not loaded");
+
+    }
+
+    //Another negative tests for email
+
+    @Test
+    public void emptyEmailTest () {
+        webDriver.get ("https://linkedin.com/");
+
+        LoginPage loginPage = new LoginPage(webDriver);
+
+        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
+
+        loginPage.login("", "1992mypas");
+
+        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
+    }
+
+    @Test
+    public void wrongEmailTest() {
+        webDriver.get("https://linkedin.com");
+
+        LoginPage loginPage = new LoginPage(webDriver);
+
+        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
+
+        loginPage.login("a@b", "1992mypas");
+
+        LoginSubmitPage loginSubmitPage = new LoginSubmitPage(webDriver);
+
+        Assert.assertTrue(loginSubmitPage.isEmailMessageDisplayed(), "Login Submit page is not loaded");
 
     }
 
