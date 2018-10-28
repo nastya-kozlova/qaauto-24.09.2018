@@ -31,6 +31,14 @@ public class LoginTest {
         };
     }
 
+    @DataProvider
+    public Object[][] leadingToLoginSubmitTestDataProvider() {
+        return new Object[][]{
+                { "a", "1992mypas", "Укажите действительный адрес эл. почты.", "" },
+        };
+    }
+
+
     /**
      * PreConditions:
      * - Open FF browser.
@@ -76,22 +84,19 @@ public class LoginTest {
     }
 
     @Test
-    public void wrongPasswordTest() {
+    public void wrongPasswordTest() {//LoginSubmit
         webDriver.get("https://linkedin.com");
 
         LoginPage loginPage = new LoginPage(webDriver);
 
         Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
 
-        loginPage.login("nastya_kozlova@hotmail.com", "658hsgdsd");
-
-        LoginSubmitPage loginSubmitPage = new LoginSubmitPage(webDriver);
+        LoginSubmitPage loginSubmitPage = loginPage.login("nastya_kozlova@hotmail.com", "658hsgdsd");
 
         Assert.assertTrue(loginSubmitPage.isPasswordMessageDisplayed(), "Login Submit page is not loaded");
 
     }
 
-    //Another negative tests for email
 
     @Test
     public void emptyEmailTest () {
@@ -114,9 +119,8 @@ public class LoginTest {
 
         Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
 
-        loginPage.login("a@b", "1992mypas");
+        LoginSubmitPage loginSubmitPage = loginPage.login("a@b", "1992mypas");
 
-        LoginSubmitPage loginSubmitPage = new LoginSubmitPage(webDriver);
 
         Assert.assertTrue(loginSubmitPage.isEmailMessageDisplayed(), "Login Submit page is not loaded");
 
