@@ -1,4 +1,3 @@
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -37,7 +36,7 @@ public class LoginPage {
         return signInButton.isDisplayed();
     }
 
-    public <T> T login(String userEmail, String userPassword) {//один метод вместо трех
+    public <T> T login(String userEmail, String userPassword) {
         logInEmailField.sendKeys(userEmail);
         passwordDataField.sendKeys(userPassword);
         signInButton.click();
@@ -50,7 +49,7 @@ public class LoginPage {
             return (T) new HomePage (webDriver);
         }
         if (webDriver.getCurrentUrl().contains("uas/login-submit")){
-            return (T) new LoginSubmitPage(webDriver);
+            return (T) new LoginSubmitPage (webDriver);
         } else {
             return (T) new LoginPage(webDriver);
         }

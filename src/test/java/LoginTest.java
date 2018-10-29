@@ -8,6 +8,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+
 public class LoginTest {
     WebDriver webDriver;//объявили переменную
 
@@ -32,11 +33,25 @@ public class LoginTest {
     }
 
     @DataProvider
-    public Object[][] leadingToLoginSubmitTestDataProvider() {
+    public Object[][] leadingToLoginSubmitDataProvider() {
         return new Object[][]{
-                { "a", "1992mypas", "Укажите действительный адрес эл. почты.", "" },
+                { "a", "1992mypas", "Слишком короткий текст (минимальная длина – 3 симв., введено – 1 симв.).", "" },
+                {"TeSt", "1992mypas", "Укажите действительный адрес эл. почты.", ""},
+                {"test", "1", "","Пароль должен содержать не менее 6 символов."},
+                {"nastya_kozlova@hotmail.com","wrongwrong" , "",  "Это неверный пароль. Повторите попытку или "}
         };
     }
+
+    @DataProvider
+    public Object[][] stayingOnTheLoginPageDataProvider() {
+        return new Object[][]{
+                {"","1992mypas"},
+                {"nastya_kozlova@hotmail.com",""},
+                {"",""}
+        };
+
+    }
+
 
 
     /**
@@ -69,22 +84,48 @@ public class LoginTest {
                 "HomePage is not displayed on Login page.");
     }
 
-    @Test
-    public void negativeLoginWithEmptyPasswordTest() {
+//дз к 8 занятию
+
+    @Test (dataProvider = "leadingToLoginSubmitDataProvider")
+    public void negativeLeadingToLoginSubmitPage (String userEmail, String userPassword, String emailMessage, String
+                                                  passwordMessage){
         webDriver.get("https://linkedin.com");
+        LoginPage loginPage = new LoginPage(webDriver);
+        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
+        LoginSubmitPage loginSubmitPage = loginPage.login(userEmail, userPassword);
+        Assert.assertTrue(loginSubmitPage.isGeneralErrorMessageDisplayed());
+        Assert.assertEquals(loginSubmitPage.textOfEmailMessage(), emailMessage, "Different result");
+        Assert.assertEquals(loginSubmitPage.textOfPasswordMessage(), passwordMessage, "Different result");
+    }
+
+    @Test (dataProvider = "stayingOnTheLoginPageDataProvider")
+    public void negativeStayingOnLoginPage (String userEmail, String userPassword){
+        webDriver.get("https://linkedin.com");
+        LoginPage loginPage = new LoginPage(webDriver);
+        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
+        loginPage.login(userEmail, userPassword);
+        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
+    }
+
+    //дз к 7 занятию
+
+    @Test
+    public void wrongEmailTest() {
+        webDriver.get("https://linkedin.com");
+
         LoginPage loginPage = new LoginPage(webDriver);
 
         Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
 
-        loginPage.login("nastya_kozlova@hotmail.com", "");
+        LoginSubmitPage loginSubmitPage = loginPage.login("a@b", "1992mypas");
 
 
-        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
+        Assert.assertTrue(loginSubmitPage.isEmailMessageDisplayed(), "Login Submit page is not loaded");
 
     }
 
     @Test
-    public void wrongPasswordTest() {//LoginSubmit
+    public void wrongPasswordTest() {
         webDriver.get("https://linkedin.com");
 
         LoginPage loginPage = new LoginPage(webDriver);
@@ -97,6 +138,7 @@ public class LoginTest {
 
     }
 
+    //негативные, при которых мы остаемся на той же странице
 
     @Test
     public void emptyEmailTest () {
@@ -112,17 +154,16 @@ public class LoginTest {
     }
 
     @Test
-    public void wrongEmailTest() {
+    public void negativeLoginWithEmptyPasswordTest() {
         webDriver.get("https://linkedin.com");
-
         LoginPage loginPage = new LoginPage(webDriver);
 
         Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
 
-        LoginSubmitPage loginSubmitPage = loginPage.login("a@b", "1992mypas");
+        loginPage.login("nastya_kozlova@hotmail.com", "");
 
 
-        Assert.assertTrue(loginSubmitPage.isEmailMessageDisplayed(), "Login Submit page is not loaded");
+        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
 
     }
 
