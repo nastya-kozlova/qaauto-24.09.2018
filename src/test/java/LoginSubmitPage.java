@@ -5,6 +5,7 @@ import org.openqa.selenium.support.PageFactory;
 
 public class LoginSubmitPage {
 
+
     private WebDriver webDriver;
 
     @FindBy(xpath ="//span[@id='session_password-login-error']")
@@ -22,17 +23,12 @@ public class LoginSubmitPage {
     }
 
 
-    public boolean isPageLoadedWithPasswordMessage (){
+    public boolean isPageLoaded (){
         return webDriver.getCurrentUrl().contains("https://www.linkedin.com/uas/login-submit")
                 && webDriver.getTitle().equals("Войти в LinkedIn")
-                && isPasswordMessageDisplayed();
+                && isGeneralErrorMessageDisplayed();
     }
 
-    public boolean isPageLoadedWithEmailMessage (){
-        return webDriver.getCurrentUrl().contains("https://www.linkedin.com/uas/login-submit")
-                && webDriver.getTitle().equals("Войти в LinkedIn")
-                && isEmailMessageDisplayed ();
-    }
 
     public boolean isPasswordMessageDisplayed () {
         return  passwordMessage.isDisplayed();
@@ -47,11 +43,16 @@ public class LoginSubmitPage {
         return generalErrorMessage.isDisplayed();
     }
 
-    public String textOfEmailMessage ( ){
+    public String getTextOfEmailMessage ( ){
         return emailMessage.getText();
     }
 
-    public String textOfPasswordMessage (){
+    public String getTextOfPasswordMessage (){
         return passwordMessage.getText();
     }
+
+    public String getAlertMessageText() {
+        return generalErrorMessage.getText();
+    }
 }
+

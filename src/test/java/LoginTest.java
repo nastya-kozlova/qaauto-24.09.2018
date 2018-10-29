@@ -11,11 +11,13 @@ import org.testng.annotations.Test;
 
 public class LoginTest {
     WebDriver webDriver;//объявили переменную
+    LoginPage loginPage;//объявили переменную
 
     @BeforeMethod
     public void beforeMethod() {
-        webDriver = new FirefoxDriver();//проинициализировали переменную
-
+        webDriver = new FirefoxDriver();
+        webDriver.get("https://linkedin.com");
+        loginPage = new LoginPage(webDriver);//проинициализировали
     }
 
     @AfterMethod
@@ -32,15 +34,6 @@ public class LoginTest {
         };
     }
 
-    @DataProvider
-    public Object[][] leadingToLoginSubmitDataProvider() {
-        return new Object[][]{
-                { "a", "1992mypas", "Слишком короткий текст (минимальная длина – 3 симв., введено – 1 симв.).", "" },
-                {"TeSt", "1992mypas", "Укажите действительный адрес эл. почты.", ""},
-                {"test", "1", "","Пароль должен содержать не менее 6 символов."},
-                {"nastya_kozlova@hotmail.com","wrongwrong" , "",  "Это неверный пароль. Повторите попытку или "}
-        };
-    }
 
     @DataProvider
     public Object[][] stayingOnTheLoginPageDataProvider() {
@@ -73,10 +66,7 @@ public class LoginTest {
     @Test(dataProvider = "validDataProvider")
     public void successfulLoginTest(String userEmail, String userPassword) {
 
-        webDriver.get("https://linkedin.com");
-        LoginPage loginPage = new LoginPage(webDriver);
-
-       Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
+        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
 
         HomePage homePage = loginPage.login(userEmail, userPassword);
 
@@ -86,86 +76,34 @@ public class LoginTest {
 
 //дз к 8 занятию
 
-    @Test (dataProvider = "leadingToLoginSubmitDataProvider")
-    public void negativeLeadingToLoginSubmitPage (String userEmail, String userPassword, String emailMessage, String
+
+    @DataProvider
+    public Object[][] validationMessagesCombination() {
+        return new Object[][]{
+                { "a", "1992mypas", "Слишком короткий текст (минимальная длина – 3 симв., введено – 1 симв.).", "" },
+                {"TeSt", "1992mypas", "Укажите действительный адрес эл. почты.", ""},
+                {"test", "1", "","Пароль должен содержать не менее 6 символов."},
+                {"nastya_kozlova@hotmail.com","wrongwrong" , "",  "Это неверный пароль. Повторите попытку или "}
+        };
+    }
+    @Test (dataProvider = "validationMessagesCombination")
+    public void errorMessagesOnInvalidEmailPasswordTest (String userEmail, String userPassword, String emailMessage, String
                                                   passwordMessage){
-        webDriver.get("https://linkedin.com");
-        LoginPage loginPage = new LoginPage(webDriver);
         Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
         LoginSubmitPage loginSubmitPage = loginPage.login(userEmail, userPassword);
-        Assert.assertTrue(loginSubmitPage.isGeneralErrorMessageDisplayed());
-        Assert.assertEquals(loginSubmitPage.textOfEmailMessage(), emailMessage, "Different result");
-        Assert.assertEquals(loginSubmitPage.textOfPasswordMessage(), passwordMessage, "Different result");
+       // Assert.assertTrue(loginSubmitPage.isPageLoaded);//-это нужно доделать (метод isPageLoaded)
+        Assert.assertEquals (loginSubmitPage.getAlertMessageText(), "При заполнении формы были допущены ошибки. Проверьте и исправьте отмеченные поля.", "");
+        Assert.assertEquals(loginSubmitPage.getTextOfEmailMessage(), emailMessage, "Email validation message is wrong.");
+        Assert.assertEquals(loginSubmitPage.getTextOfPasswordMessage(), passwordMessage, " Password validation message is wrong.");
     }
 
     @Test (dataProvider = "stayingOnTheLoginPageDataProvider")
     public void negativeStayingOnLoginPage (String userEmail, String userPassword){
-        webDriver.get("https://linkedin.com");
-        LoginPage loginPage = new LoginPage(webDriver);
         Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
         loginPage.login(userEmail, userPassword);
         Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
     }
 
-    //дз к 7 занятию
-
-    @Test
-    public void wrongEmailTest() {
-        webDriver.get("https://linkedin.com");
-
-        LoginPage loginPage = new LoginPage(webDriver);
-
-        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
-
-        LoginSubmitPage loginSubmitPage = loginPage.login("a@b", "1992mypas");
-
-
-        Assert.assertTrue(loginSubmitPage.isEmailMessageDisplayed(), "Login Submit page is not loaded");
-
-    }
-
-    @Test
-    public void wrongPasswordTest() {
-        webDriver.get("https://linkedin.com");
-
-        LoginPage loginPage = new LoginPage(webDriver);
-
-        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
-
-        LoginSubmitPage loginSubmitPage = loginPage.login("nastya_kozlova@hotmail.com", "658hsgdsd");
-
-        Assert.assertTrue(loginSubmitPage.isPasswordMessageDisplayed(), "Login Submit page is not loaded");
-
-    }
-
-    //негативные, при которых мы остаемся на той же странице
-
-    @Test
-    public void emptyEmailTest () {
-        webDriver.get ("https://linkedin.com/");
-
-        LoginPage loginPage = new LoginPage(webDriver);
-
-        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
-
-        loginPage.login("", "1992mypas");
-
-        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
-    }
-
-    @Test
-    public void negativeLoginWithEmptyPasswordTest() {
-        webDriver.get("https://linkedin.com");
-        LoginPage loginPage = new LoginPage(webDriver);
-
-        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
-
-        loginPage.login("nastya_kozlova@hotmail.com", "");
-
-
-        Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
-
-    }
 
 
 }

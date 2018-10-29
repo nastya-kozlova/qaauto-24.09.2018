@@ -20,4 +20,7 @@ public class HomePage {
                 && webDriver.getTitle().contains("LinkedIn")
                 && profileNavItem.isDisplayed();
     }
+
+
 }
+
