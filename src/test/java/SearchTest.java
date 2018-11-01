@@ -5,6 +5,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 public class SearchTest {
     WebDriver webDriver;
     LoginPage loginPage;
@@ -42,6 +44,8 @@ public class SearchTest {
 
     @Test
     public void  basicSearchTest (){
+        String searchTerm = "HR";
+
         Assert.assertTrue(loginPage.isPageLoaded(), "Login Page is not loaded");
 
         HomePage homePage = loginPage.login("nastya_kozlova@hotmail.com","1992mypas" );
@@ -49,6 +53,16 @@ public class SearchTest {
         Assert.assertTrue(homePage.isPageLoaded(),
                 "HomePage is not displayed on Login page.");
 
+         SearchPage searchPage = homePage.search (searchTerm);
+
+        Assert.assertTrue(searchPage.isPageLoaded(), "Search page is not loaded");
+        Assert.assertEquals(searchPage.getSearchResultsCount(), 10, "SearchResults count is wrong");
+
+        List <String> searchResultList = searchPage.getSearchResults();
+
+        for (String searchResult : searchResultList) {
+            Assert.assertTrue(searchResult.toLowerCase().contains(searchTerm.toLowerCase()), "SearchTerm " +searchTerm+ "not found in" +searchResult);
+        }
 
     }
 }
