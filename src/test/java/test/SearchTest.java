@@ -1,3 +1,5 @@
+package test;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.Assert;
@@ -5,9 +7,13 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import page.HomePage;
+import page.LoginPage;
+import page.SearchPage;
+
 import java.util.List;
 
-public class SearchTest {
+public class SearchTest extends BaseTest {
     WebDriver webDriver;
     LoginPage loginPage;
 
@@ -51,7 +57,7 @@ public class SearchTest {
         HomePage homePage = loginPage.login("nastya_kozlova@hotmail.com","1992mypas" );
 
         Assert.assertTrue(homePage.isPageLoaded(),
-                "HomePage is not displayed on Login page.");
+                "page.HomePage is not displayed on Login page.");
 
          SearchPage searchPage = homePage.search (searchTerm);
 

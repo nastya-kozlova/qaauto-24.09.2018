@@ -1,3 +1,5 @@
+package test;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -7,6 +9,11 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import page.HomePage;
+import page.LoginPage;
+import page.LoginSubmitPage;
+
 
 
 public class LoginTest {
@@ -71,7 +78,7 @@ public class LoginTest {
         HomePage homePage = loginPage.login(userEmail, userPassword);
 
         Assert.assertTrue(homePage.isPageLoaded(),
-                "HomePage is not displayed on Login page.");
+                "page.HomePage is not displayed on Login page.");
     }
 
 //дз к 8 занятию
